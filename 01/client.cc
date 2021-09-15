@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
 
     if (argc != 2) {
         printf("usage: tcpclient <IPaddress>");
-        exit(0);
+        exit(1);
     }
 
     sockfd = socket(AF_INET, SOCK_STREAM, 0);

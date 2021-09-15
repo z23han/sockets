@@ -52,7 +52,6 @@ int main() {
     }
 
     close(listenfd);
-    close(connfd);
 
     return 0;
 }

@@ -1,0 +1,10 @@
+if we first type in 
+./tcp_server 
+and then, do some telnet on the client side by 
+telnet 127.0.0.1 12345
+
+Then, we close the server by [Ctrl+C], and then we relaunch server side by 
+./tcp_server
+we'll get 
+bind failed: Address already in use (98)
+

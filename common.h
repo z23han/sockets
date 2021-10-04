@@ -13,6 +13,7 @@
 #include <signal.h>
 #include <sys/select.h>
 #include <poll.h>
+#include <sys/wait.h>
 
 #define SERV_PORT   12345
 #define MAXLINE 4096

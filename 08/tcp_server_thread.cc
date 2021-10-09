@@ -1,7 +1,4 @@
 #include "../common.h"
-#include <future>
-#include <thread>
-#include <chrono>
 
 static int count;
 
@@ -55,43 +52,42 @@ int main(int argc, char **argv) {
     count = 0;
     bzero(message, MAXLINE);
 
+    struct timeval tv;
+    tv.tv_sec = 10;
+    tv.tv_usec = 0;
+    setsockopt(connfd, SOL_SOCKET, SO_RCVTIMEO, (const char *)&tv, sizeof(tv));
+    
     for (;;) {
-
-        auto f = std::async(std::launch::async, [&]() 
-        {
-            return recv(connfd, message, MAXLINE, 0);
-        });
-
-        std::future_status f_status;
-        f_status = f.wait_for(std::chrono::seconds(10));
         
-        if (f_status == std::future_status::timeout || f_status == std::future_status::deferred)
+        fprintf(stdout, "server try recv\n");
+
+        ssize_t n = recv(connfd, message, MAXLINE, 0);
+        
+        if (n < 0)
         {
-            fprintf(stderr, "didn't receive anything\n");
-            exit(1);
-        }
-        else 
-        {
-            ssize_t n = f.get();
-            
-            if (n < 0)
+            if ((errno != EAGAIN) && (errno != EWOULDBLOCK))
             {
                 fprintf(stderr, "recv error\n");
                 exit(1);
-            } 
-            else if (n == 0)
-            {
-                fprintf(stdout, "client closed\n");
-                exit(0);
             }
-
-            message[n] = 0;
-            
-            printf("received %zu bytes: %s\n", n, message);
-            count++;
-            
-            bzero(message, MAXLINE);
+            else
+            {
+                fprintf(stdout, "recv timeout\n");
+                continue;
+            }
         }
+        else if (n == 0)
+        {
+            fprintf(stdout, "client closed\n");
+            exit(0);
+        }
+        
+        message[n] = 0;
+
+        printf("received %zu bytes: %s\n", n, message);
+        count++;
+
+        bzero(message, MAXLINE);
     }
 
     return 0;

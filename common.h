@@ -14,10 +14,18 @@
 #include <sys/select.h>
 #include <poll.h>
 #include <sys/wait.h>
+#include <fcntl.h>
 
 #define SERV_PORT   12345
 #define MAXLINE 4096
 #define LISTENQ  1024
+
+
+struct acceptor 
+{
+    int listen_port; 
+    int listen_fd;
+};
 
 
 #endif  // COMMON_H
